@@ -217,20 +217,24 @@
         }
 
         entry.prototype = {
-            // given a list of namespaces, is our entry in any of them?
-            inNamespaces: function (checkNamespaces) {
-              var i, j
+            // given a list of namespaces, does our entry have all of them?
+            hasNamespaces: function(checkNamespaces) {
+              var i, j, isFound
               if (!checkNamespaces)
                 return true
               if (!this.namespaces)
                 return false
               for (i = checkNamespaces.length; i--;) {
+                isFound = false
                 for (j = this.namespaces.length; j--;) {
-                  if (checkNamespaces[i] === this.namespaces[j])
-                    return true
+                  if (checkNamespaces[i] === this.namespaces[j]) {
+                    isFound = true
+                    break
+                  }
                 }
+                if (!isFound) return false
               }
-              return false
+              return true
             }
 
             // match by element, original fn (opt), handler fn (opt)
@@ -367,7 +371,7 @@
           , handlers = registry.get(element, type, handler)
 
         for (i = 0, l = handlers.length; i < l; i++) {
-          if (handlers[i].inNamespaces(namespaces)) {
+          if (handlers[i].hasNamespaces(namespaces)) {
             if ((entry = handlers[i]).eventSupport)
               listener(entry.target, entry.eventType, entry.handler, false, entry.type)
             // TODO: this is problematic, we have a registry.get() and registry.del() that
@@ -510,7 +514,7 @@
             handlers = registry.get(element, type)
             args = [false].concat(args)
             for (j = 0, l = handlers.length; j < l; j++) {
-              if (handlers[j].inNamespaces(names))
+              if (handlers[j].hasNamespaces(names))
                 handlers[j].handler.apply(element, args)
             }
           }
