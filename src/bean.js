@@ -35,7 +35,7 @@
           'keydown keypress keyup ' +                                        // keyboard
           'orientationchange ' +                                             // mobile
           'focus blur change reset select submit ' +                         // form elements
-          'load unload beforeunload resize move DOMContentLoaded readystatechange ' + // window
+          'load unload beforeunload resize move DOMContentLoaded readystatechange message ' + // window
           'error abort scroll ' +                                            // misc
           (W3C_MODEL ? // element.fireEvent('onXYZ'... is not forgiving if we try to fire an event
                        // that doesn't actually exist, so make sure we only do these on newer browsers
@@ -43,7 +43,7 @@
             'input invalid ' +                                                 // form elements
             'touchstart touchmove touchend touchcancel ' +                     // touch
             'gesturestart gesturechange gestureend ' +                         // gesture
-            'message readystatechange pageshow pagehide popstate ' +           // window
+            'readystatechange pageshow pagehide popstate ' +                   // window
             'hashchange offline online ' +                                     // window
             'afterprint beforeprint ' +                                        // printing
             'dragstart dragenter dragover dragleave drag drop dragend ' +      // dnd
@@ -92,6 +92,7 @@
           , keyProps = commonProps.concat('char charCode key keyCode keyIdentifier keyLocation'.split(' '))
           , textProps = commonProps.concat(['data'])
           , touchProps = commonProps.concat('touches targetTouches changedTouches scale rotation'.split(' '))
+          , messageProps = commonProps.concat(['data', 'origin', 'source'])
           , preventDefault = 'preventDefault'
           , createPreventDefault = function (event) {
               return function () {
@@ -162,6 +163,8 @@
               props = mouseWheelProps
             } else if (textTypeRegex.test(type)) {
               props = textProps
+            } else if (type === 'message') {
+              props = messageProps
             }
             copyProps(event, result, props || commonProps)
           }
